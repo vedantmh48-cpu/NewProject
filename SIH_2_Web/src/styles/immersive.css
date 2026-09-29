@@ -1,0 +1,821 @@
+﻿/* ==========================================================================
+   TerraSRM immersive layer
+   Added on top of index.css / editorial.css. Nothing in the original
+   stylesheets is overridden globally: every new rule is namespaced to the
+   immersive components introduced with the scroll journey.
+   ========================================================================== */
+
+:root {
+  --ts-bg: var(--color-background);
+  --ts-surface: var(--color-surface);
+  --ts-ink: var(--color-text);
+  --ts-muted: var(--color-text-secondary);
+  --ts-accent: var(--color-primary-dark);
+  --ts-light-blue: var(--color-surface-secondary);
+  --ts-line: var(--color-border);
+  --ts-shadow-soft: 0 18px 48px rgba(23, 74, 112, 0.1);
+  --ts-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+/* Skip link ---------------------------------------------------------------- */
+body {
+  background: var(--ts-bg);
+}
+.skip-link {
+  position: fixed;
+  z-index: 200;
+  left: 50%;
+  top: 10px;
+  transform: translate(-50%, -220%);
+  padding: 10px 16px;
+  border: 1px solid var(--ts-line);
+  border-radius: 10px;
+  background: var(--ts-surface);
+  color: var(--ts-ink);
+  font-size: 12px;
+  box-shadow: var(--ts-shadow-soft);
+  transition: transform 0.2s;
+}
+.skip-link:focus-visible {
+  transform: translate(-50%, 0);
+}
+
+/* Scene frame -------------------------------------------------------------- */
+.scene {
+  position: relative;
+}
+.scene-content {
+  position: relative;
+  z-index: 1;
+}
+.scene-atmosphere {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.scene-glow {
+  position: absolute;
+  inset: -14% -6%;
+  background:
+    radial-gradient(ellipse at 78% 18%, rgba(197, 226, 255, 0.5), transparent 46%),
+    radial-gradient(ellipse at 12% 82%, rgba(207, 235, 252, 0.42), transparent 44%);
+  filter: blur(6px);
+}
+.scene-grid {
+  position: absolute;
+  inset: -8% -6%;
+  background-image:
+    linear-gradient(rgba(125, 157, 189, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(125, 157, 189, 0.05) 1px, transparent 1px);
+  background-size: 84px 84px;
+  mask-image: linear-gradient(180deg, transparent, black 22%, black 78%, transparent);
+}
+.scene-marker {
+  display: none;
+  position: absolute;
+  top: 122px;
+  left: 26px;
+  z-index: 2;
+  flex-direction: column;
+  gap: 3px;
+  color: var(--ts-muted);
+  pointer-events: none;
+  font-family: var(--ts-mono);
+}
+.scene-marker-count {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: rgba(37, 99, 235, 0.3);
+  font-variant-numeric: tabular-nums;
+}
+.scene-marker-total {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: rgba(102, 117, 138, 0.55);
+}
+.scene-marker-label {
+  display: none;
+  margin-top: 6px;
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  color: rgba(102, 117, 138, 0.7);
+}
+@media (min-width: 1320px) {
+  .scene-marker {
+    display: flex;
+  }
+}
+@media (min-width: 1560px) {
+  .scene-marker-label {
+    display: inline;
+  }
+}
+
+/* Small label used inside scenes ------------------------------------------ */
+.scene-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #56809f;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+/* Intro progress track ---------------------------------------------------- */
+.intro-track {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  width: 168px;
+  height: 2px;
+  border-radius: 2px;
+  overflow: hidden;
+  transform: translateX(-50%);
+  background: rgba(37, 99, 235, 0.14);
+}
+.intro-track i {
+  display: block;
+  height: 100%;
+  transform-origin: 0 50%;
+  background: var(--ts-accent);
+}
+
+/* Cursor variants ---------------------------------------------------------- */
+.cursor-aura.variant-explore,
+.cursor-aura.variant-globe {
+  width: 58px;
+  height: 58px;
+  margin: -29px 0 0 -29px;
+  border-color: rgba(52, 139, 194, 0.42);
+  background: radial-gradient(circle, rgba(117, 204, 242, 0.14), transparent 70%);
+}
+.cursor-aura.variant-drag {
+  width: 62px;
+  height: 34px;
+  margin: -17px 0 0 -31px;
+  border-radius: 40px;
+  border-color: rgba(37, 99, 235, 0.4);
+  background: rgba(37, 99, 235, 0.06);
+}
+.cursor-aura.variant-zoom {
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  border-style: dashed;
+}
+.cursor-aura.variant-text {
+  width: 3px;
+  height: 26px;
+  margin: -13px 0 0 -1.5px;
+  border-radius: 2px;
+  border-color: transparent;
+  background: rgba(37, 99, 235, 0.5);
+}
+.cursor-dot.variant-drag {
+  background: var(--ts-accent);
+}
+
+/* Navigation readout ------------------------------------------------------ */
+.nav-readout {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #7b8b9e;
+  font-family: var(--ts-mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+}
+.nav-readout-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #47add9;
+  box-shadow: 0 0 0 3px #e2f4ff;
+}
+.topbar.is-open {
+  z-index: 60;
+}
+.topbar.is-scrolled .nav-readout {
+  color: #6d7f93;
+}
+
+
+/* Journey rail ------------------------------------------------------------ */
+.journey-rail {
+  display: none;
+  position: fixed;
+  z-index: 22;
+  left: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding-left: 12px;
+}
+.journey-track {
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: rgba(199, 214, 229, 0.85);
+  overflow: hidden;
+}
+.journey-track i {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 0;
+  background: linear-gradient(180deg, #7cb6e8, var(--ts-accent));
+  display: block;
+}
+.journey-rail ul {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.journey-rail a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px 7px 0;
+  color: #93a3b5;
+  font-family: var(--ts-mono);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  transition: color 0.24s;
+}
+.rail-num {
+  width: 16px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.rail-tick {
+  width: 10px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.5;
+  transition: width 0.24s, opacity 0.24s, background 0.24s;
+}
+.rail-label {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  transition: max-width 0.32s ease, opacity 0.24s ease;
+}
+.journey-rail a:hover,
+.journey-rail a:focus-visible {
+  color: #4d7ea8;
+}
+.journey-rail a:hover .rail-tick,
+.journey-rail a:focus-visible .rail-tick {
+  width: 18px;
+  opacity: 0.85;
+}
+.journey-rail a:hover .rail-label,
+.journey-rail a:focus-visible .rail-label,
+.journey-rail a.is-active .rail-label {
+  max-width: 150px;
+  opacity: 1;
+}
+.journey-rail a.is-active {
+  color: var(--ts-accent);
+}
+.journey-rail a.is-active .rail-tick {
+  width: 22px;
+  opacity: 1;
+  background: var(--ts-accent);
+}
+@media (min-width: 1320px) {
+  .journey-rail {
+    display: block;
+  }
+}
+
+/* Globe ------------------------------------------------------------------- */
+.globe-host {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 158%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.globe-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+.globe-canvas[data-painted="true"] {
+  opacity: 1;
+}
+.globe-fallback-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.9s ease;
+}
+.globe-fallback-svg[data-spin="true"] {
+  animation: globe-fallback-spin 220s linear infinite;
+}
+.earth-ball[data-live="true"] .globe-fallback-svg {
+  opacity: 0;
+}
+@keyframes globe-fallback-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.earth-ball.is-fallback {
+  overflow: hidden;
+}
+.earth-ball.is-webgl {
+  overflow: visible;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.earth-ball.is-webgl:after {
+  display: none;
+}
+.earth-ball.is-webgl:before {
+  opacity: 0.45;
+}
+.earth-rings {
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.earth-rings i {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(88, 147, 196, 0.13);
+  border-radius: 50%;
+}
+.earth-rings i:first-child {
+  inset: 7%;
+  border-style: dashed;
+}
+.earth-rings i:nth-child(2) {
+  inset: 16%;
+
+/* Transformation scene ---------------------------------------------------- */
+.compare-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.compare-pixel-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.compare-pixel-grid.coarse {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
+  background-size: 12.5% 12.5%;
+  box-shadow: inset 0 0 60px rgba(20, 44, 40, 0.18);
+  clip-path: inset(0 0 0 var(--compare-pos, 50%));
+}
+.compare-pixel-grid.fine {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.28) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.28) 1px, transparent 1px);
+  background-size: 3.125% 3.125%;
+  box-shadow: inset 0 0 60px rgba(255, 255, 255, 0.16);
+  clip-path: inset(0 calc(100% - var(--compare-pos, 50%)) 0 0);
+}
+.compare-picture[data-dragging="true"] {
+  cursor: grabbing;
+}
+.compare-loupe {
+  position: absolute;
+  z-index: 6;
+  width: 134px;
+  height: 134px;
+  margin: -67px 0 0 -67px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 16px 34px rgba(16, 29, 53, 0.3),
+    0 0 0 6px rgba(255, 255, 255, 0.28);
+  pointer-events: none;
+}
+.compare-loupe-stage {
+  position: absolute;
+  inset: 0;
+  transform: scale(2.4);
+  transform-origin: var(--loupe-origin, 50% 50%);
+}
+.compare-loupe-stage .compare-top {
+  clip-path: none !important;
+}
+.compare-loupe em {
+  position: absolute;
+  left: 50%;
+  bottom: 9px;
+  transform: translateX(-50%);
+  padding: 3px 7px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #2c4a68;
+  font-family: var(--ts-mono);
+  font-style: normal;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+.compare-cue {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 11px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #3f5c78;
+  font-family: var(--ts-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  pointer-events: none;
+}
+.transform-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 26px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.transform-steps li {
+  display: flex;
+  gap: 13px;
+  padding: 12px 0;
+  border-top: 1px solid #e8eef4;
+}
+.transform-step-index {
+  flex: none;
+  padding-top: 2px;
+  color: #9db0c2;
+  font-family: var(--ts-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+.transform-steps b {
+  display: block;
+  color: #2c4664;
+  font-size: 11px;
+  font-weight: 650;
+}
+.transform-steps small {
+  display: block;
+  margin-top: 4px;
+  color: #8493a4;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+/* Workflow scene ---------------------------------------------------------- */
+.workflow-board {
+  position: relative;
+}
+.workflow-track {
+  position: relative;
+  height: 2px;
+  margin: 0 0 38px;
+  border-radius: 2px;
+  background: #dde7f0;
+  overflow: hidden;
+}
+.workflow-track i {
+  display: block;
+  height: 100%;
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, #93c8ea, var(--ts-accent));
+}
+.workflow-step {
+  transition: opacity 0.4s;
+}
+.workflow-step[data-state="idle"] {
+  opacity: 0.6;
+}
+.workflow-step[data-state="active"] .step-icon,
+.workflow-step[data-state="done"] .step-icon {
+  border-color: #bcd8f5;
+  background: var(--ts-light-blue);
+  color: var(--ts-accent);
+  transition: background 0.35s, border-color 0.35s, color 0.35s;
+}
+.workflow-step[data-state="active"] .step-number {
+  color: var(--ts-accent);
+}
+.workflow-step[data-state="active"] p {
+  color: var(--ts-ink);
+}
+.step-hint {
+  display: block;
+  max-width: 150px;
+  margin-top: 9px;
+  color: #93a2b2;
+  font-size: 9px;
+  line-height: 1.6;
+}
+.workflow-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 44px;
+  color: #8b9aab;
+  font-size: 9px;
+  text-align: center;
+}
+.workflow-note i {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #cbd6e1;
+}
+
+/* Technology scene -------------------------------------------------------- */
+.tech-stack {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(194px, 1fr));
+  gap: 14px;
+  margin-top: 56px;
+}
+.tech-layer {
+  padding: 20px 19px;
+  border: 1px solid var(--ts-line);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+.tech-layer:hover {
+  box-shadow: 0 18px 40px rgba(33, 66, 101, 0.09);
+  transform: translateY(-2px);
+}
+.tech-layer-index {
+  color: #9db0c2;
+  font-family: var(--ts-mono);
+  font-size: 8px;
+  letter-spacing: 0.16em;
+}
+.tech-layer h3 {
+  margin: 11px 0 3px;
+  color: var(--ts-ink);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.tech-layer > small {
+  color: #8493a4;
+  font-size: 9px;
+}
+.tech-layer-items {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 15px;
+}
+.tech-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 10px;
+  border: 1px solid #e4ecf4;
+  border-radius: 9px;
+  background: #fff;
+  color: #3b5677;
+  font-size: 10px;
+}
+.tech-chip em {
+  color: #93a2b2;
+  font-style: normal;
+  font-size: 7px;
+  letter-spacing: 0.12em;
+}
+.tech-chip em.is-current {
+  color: #1f8a6b;
+}
+
+/* Download scene additions ------------------------------------------------ */
+.download-requirements {
+  margin-top: 88px;
+  padding-top: 54px;
+  border-top: 1px solid rgba(198, 219, 235, 0.62);
+}
+
+/* Application lightbox additions ------------------------------------------ */
+.lightbox-actions {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  z-index: 3;
+  display: flex;
+  gap: 8px;
+  transform: translateX(-50%);
+}
+.lightbox-actions button {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  transition: background 0.2s, border-color 0.2s;
+}
+.lightbox-actions button:hover {
+  background: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.55);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive behaviour
+   -------------------------------------------------------------------------- */
+@media (max-width: 1080px) {
+  .tech-stack {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .hero-reticle span {
+    display: none;
+  }
+  .earth-rings {
+    width: 420px;
+    height: 420px;
+  }
+  .scene-marker {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .globe-host {
+    width: 150%;
+  }
+  .hero-reticle {
+    inset: 6% 3% 10% 5%;
+  }
+  .hero-reticle i {
+    width: 18px;
+    height: 18px;
+  }
+  .earth-rings {
+    width: 340px;
+    height: 340px;
+  }
+  .compare-loupe {
+    width: 108px;
+    height: 108px;
+    margin: -54px 0 0 -54px;
+  }
+  .workflow-track {
+    margin-bottom: 26px;
+  }
+  .step-hint {
+    max-width: none;
+  }
+  .tech-stack {
+    grid-template-columns: 1fr 1fr;
+    margin-top: 40px;
+  }
+  .lightbox-actions {
+    bottom: 16px;
+  }
+  .download-requirements {
+    margin-top: 56px;
+    padding-top: 34px;
+  }
+  .download-requirements .section-head {
+    margin-bottom: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tech-stack {
+    grid-template-columns: 1fr;
+  }
+  .transform-steps small {
+    font-size: 9px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .globe-canvas {
+    transition: none;
+  }
+  .hero-globe-shell {
+    will-change: auto;
+  }
+  .journey-track i {
+    transition: none;
+  }
+}
+
+
+
+
+  border-color: rgba(120, 153, 227, 0.14);
+}
+.earth-rings i:last-child {
+  inset: 30%;
+  border-color: rgba(88, 147, 196, 0.1);
+}
+.earth-stage:hover .earth-rings i:first-child {
+  border-color: rgba(88, 147, 196, 0.24);
+  transition: border-color 0.5s;
+}
+
+/* Hero -------------------------------------------------------------------- */
+.hero-globe-shell {
+  position: relative;
+  z-index: 1;
+  transform-origin: 62% 42%;
+  will-change: transform, opacity;
+}
+.hero-reticle {
+  position: absolute;
+  z-index: 2;
+  inset: 4% 2% 8% 6%;
+  pointer-events: none;
+}
+.hero-reticle i {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(37, 99, 235, 0.34);
+}
+.hero-reticle i:first-child {
+  left: 0;
+  top: 0;
+  border-right: 0;
+  border-bottom: 0;
+}
+.hero-reticle i:nth-child(2) {
+  right: 0;
+  top: 0;
+  border-left: 0;
+  border-bottom: 0;
+}
+.hero-reticle i:nth-child(3) {
+  left: 0;
+  bottom: 0;
+  border-right: 0;
+  border-top: 0;
+}
+.hero-reticle i:nth-child(4) {
+  right: 0;
+  bottom: 0;
+  border-left: 0;
+  border-top: 0;
+}
+.hero-reticle span {
+  position: absolute;
+  left: 1px;
+  bottom: -22px;
+  color: #8ba0b5;
+  font-family: var(--ts-mono);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+}
+.hero-actions {
+  flex-wrap: wrap;
+  row-gap: 12px;
+}
+.hero-actions .text-link {
+  font-size: 10px;
+}
